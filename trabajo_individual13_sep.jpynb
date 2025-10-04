@@ -1,0 +1,527 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": []
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Grupo individual\n",
+        "Ericka Guisela Cori Avalo\n",
+        "DATASET:\n",
+        "https://www.kaggle.com/datasets/carrie1/ecommerce-data?resource=download"
+      ],
+      "metadata": {
+        "id": "clnEf_oWl91z"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "pip install great_expectations==0.17.23"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "kdu_n8Nlm9QK",
+        "outputId": "5eee283d-426b-4bd9-a20a-b439dea5b70c"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Collecting great_expectations==0.17.23\n",
+            "  Downloading great_expectations-0.17.23-py3-none-any.whl.metadata (8.7 kB)\n",
+            "Collecting altair<5.0.0,>=4.2.1 (from great_expectations==0.17.23)\n",
+            "  Downloading altair-4.2.2-py3-none-any.whl.metadata (13 kB)\n",
+            "Requirement already satisfied: Click!=8.1.4,>=7.1.2 in /usr/local/lib/python3.12/dist-packages (from great_expectations==0.17.23) (8.2.1)\n",
+            "Collecting colorama>=0.4.3 (from great_expectations==0.17.23)\n",
+            "  Downloading colorama-0.4.6-py2.py3-none-any.whl.metadata (17 kB)\n",
+            "Requirement already satisfied: cryptography>=3.2 in /usr/local/lib/python3.12/dist-packages (from great_expectations==0.17.23) (43.0.3)\n",
+            "Requirement already satisfied: Ipython>=7.16.3 in /usr/local/lib/python3.12/dist-packages (from great_expectations==0.17.23) (7.34.0)\n",
+            "Requirement already satisfied: ipywidgets>=7.5.1 in /usr/local/lib/python3.12/dist-packages (from great_expectations==0.17.23) (7.7.1)\n",
+            "Requirement already satisfied: jinja2>=2.10 in /usr/local/lib/python3.12/dist-packages (from great_expectations==0.17.23) (3.1.6)\n",
+            "Requirement already satisfied: jsonpatch>=1.22 in /usr/local/lib/python3.12/dist-packages (from great_expectations==0.17.23) (1.33)\n",
+            "Requirement already satisfied: jsonschema>=2.5.1 in /usr/local/lib/python3.12/dist-packages (from great_expectations==0.17.23) (4.25.1)\n",
+            "Collecting makefun<2,>=1.7.0 (from great_expectations==0.17.23)\n",
+            "  Downloading makefun-1.16.0-py2.py3-none-any.whl.metadata (2.9 kB)\n",
+            "Collecting marshmallow<4.0.0,>=3.7.1 (from great_expectations==0.17.23)\n",
+            "  Downloading marshmallow-3.26.1-py3-none-any.whl.metadata (7.3 kB)\n",
+            "Requirement already satisfied: mistune>=0.8.4 in /usr/local/lib/python3.12/dist-packages (from great_expectations==0.17.23) (3.1.4)\n",
+            "Requirement already satisfied: nbformat>=5.0 in /usr/local/lib/python3.12/dist-packages (from great_expectations==0.17.23) (5.10.4)\n",
+            "Requirement already satisfied: notebook>=6.4.10 in /usr/local/lib/python3.12/dist-packages (from great_expectations==0.17.23) (6.5.7)\n",
+            "Requirement already satisfied: packaging in /usr/local/lib/python3.12/dist-packages (from great_expectations==0.17.23) (25.0)\n",
+            "Requirement already satisfied: pydantic>=1.9.2 in /usr/local/lib/python3.12/dist-packages (from great_expectations==0.17.23) (2.11.9)\n",
+            "Requirement already satisfied: pyparsing>=2.4 in /usr/local/lib/python3.12/dist-packages (from great_expectations==0.17.23) (3.2.4)\n",
+            "Requirement already satisfied: python-dateutil>=2.8.1 in /usr/local/lib/python3.12/dist-packages (from great_expectations==0.17.23) (2.9.0.post0)\n",
+            "Requirement already satisfied: pytz>=2021.3 in /usr/local/lib/python3.12/dist-packages (from great_expectations==0.17.23) (2025.2)\n",
+            "Requirement already satisfied: requests>=2.20 in /usr/local/lib/python3.12/dist-packages (from great_expectations==0.17.23) (2.32.4)\n",
+            "Collecting ruamel.yaml<0.17.18,>=0.16 (from great_expectations==0.17.23)\n",
+            "  Downloading ruamel.yaml-0.17.17-py3-none-any.whl.metadata (12 kB)\n",
+            "Requirement already satisfied: scipy>=1.6.0 in /usr/local/lib/python3.12/dist-packages (from great_expectations==0.17.23) (1.16.2)\n",
+            "Requirement already satisfied: tqdm>=4.59.0 in /usr/local/lib/python3.12/dist-packages (from great_expectations==0.17.23) (4.67.1)\n",
+            "Requirement already satisfied: typing-extensions>=3.10.0.0 in /usr/local/lib/python3.12/dist-packages (from great_expectations==0.17.23) (4.15.0)\n",
+            "Requirement already satisfied: tzlocal>=1.2 in /usr/local/lib/python3.12/dist-packages (from great_expectations==0.17.23) (5.3.1)\n",
+            "Requirement already satisfied: urllib3>=1.26 in /usr/local/lib/python3.12/dist-packages (from great_expectations==0.17.23) (2.5.0)\n",
+            "Requirement already satisfied: numpy>=1.22.4 in /usr/local/lib/python3.12/dist-packages (from great_expectations==0.17.23) (2.0.2)\n",
+            "Requirement already satisfied: pandas>=1.3.0 in /usr/local/lib/python3.12/dist-packages (from great_expectations==0.17.23) (2.2.2)\n",
+            "Requirement already satisfied: entrypoints in /usr/local/lib/python3.12/dist-packages (from altair<5.0.0,>=4.2.1->great_expectations==0.17.23) (0.4)\n",
+            "Requirement already satisfied: toolz in /usr/local/lib/python3.12/dist-packages (from altair<5.0.0,>=4.2.1->great_expectations==0.17.23) (0.12.1)\n",
+            "Requirement already satisfied: cffi>=1.12 in /usr/local/lib/python3.12/dist-packages (from cryptography>=3.2->great_expectations==0.17.23) (2.0.0)\n",
+            "Requirement already satisfied: setuptools>=18.5 in /usr/local/lib/python3.12/dist-packages (from Ipython>=7.16.3->great_expectations==0.17.23) (75.2.0)\n",
+            "Collecting jedi>=0.16 (from Ipython>=7.16.3->great_expectations==0.17.23)\n",
+            "  Downloading jedi-0.19.2-py2.py3-none-any.whl.metadata (22 kB)\n",
+            "Requirement already satisfied: decorator in /usr/local/lib/python3.12/dist-packages (from Ipython>=7.16.3->great_expectations==0.17.23) (4.4.2)\n",
+            "Requirement already satisfied: pickleshare in /usr/local/lib/python3.12/dist-packages (from Ipython>=7.16.3->great_expectations==0.17.23) (0.7.5)\n",
+            "Requirement already satisfied: traitlets>=4.2 in /usr/local/lib/python3.12/dist-packages (from Ipython>=7.16.3->great_expectations==0.17.23) (5.7.1)\n",
+            "Requirement already satisfied: prompt-toolkit!=3.0.0,!=3.0.1,<3.1.0,>=2.0.0 in /usr/local/lib/python3.12/dist-packages (from Ipython>=7.16.3->great_expectations==0.17.23) (3.0.52)\n",
+            "Requirement already satisfied: pygments in /usr/local/lib/python3.12/dist-packages (from Ipython>=7.16.3->great_expectations==0.17.23) (2.19.2)\n",
+            "Requirement already satisfied: backcall in /usr/local/lib/python3.12/dist-packages (from Ipython>=7.16.3->great_expectations==0.17.23) (0.2.0)\n",
+            "Requirement already satisfied: matplotlib-inline in /usr/local/lib/python3.12/dist-packages (from Ipython>=7.16.3->great_expectations==0.17.23) (0.1.7)\n",
+            "Requirement already satisfied: pexpect>4.3 in /usr/local/lib/python3.12/dist-packages (from Ipython>=7.16.3->great_expectations==0.17.23) (4.9.0)\n",
+            "Requirement already satisfied: ipykernel>=4.5.1 in /usr/local/lib/python3.12/dist-packages (from ipywidgets>=7.5.1->great_expectations==0.17.23) (6.17.1)\n",
+            "Requirement already satisfied: ipython-genutils~=0.2.0 in /usr/local/lib/python3.12/dist-packages (from ipywidgets>=7.5.1->great_expectations==0.17.23) (0.2.0)\n",
+            "Requirement already satisfied: widgetsnbextension~=3.6.0 in /usr/local/lib/python3.12/dist-packages (from ipywidgets>=7.5.1->great_expectations==0.17.23) (3.6.10)\n",
+            "Requirement already satisfied: jupyterlab-widgets>=1.0.0 in /usr/local/lib/python3.12/dist-packages (from ipywidgets>=7.5.1->great_expectations==0.17.23) (3.0.15)\n",
+            "Requirement already satisfied: MarkupSafe>=2.0 in /usr/local/lib/python3.12/dist-packages (from jinja2>=2.10->great_expectations==0.17.23) (3.0.2)\n",
+            "Requirement already satisfied: jsonpointer>=1.9 in /usr/local/lib/python3.12/dist-packages (from jsonpatch>=1.22->great_expectations==0.17.23) (3.0.0)\n",
+            "Requirement already satisfied: attrs>=22.2.0 in /usr/local/lib/python3.12/dist-packages (from jsonschema>=2.5.1->great_expectations==0.17.23) (25.3.0)\n",
+            "Requirement already satisfied: jsonschema-specifications>=2023.03.6 in /usr/local/lib/python3.12/dist-packages (from jsonschema>=2.5.1->great_expectations==0.17.23) (2025.9.1)\n",
+            "Requirement already satisfied: referencing>=0.28.4 in /usr/local/lib/python3.12/dist-packages (from jsonschema>=2.5.1->great_expectations==0.17.23) (0.36.2)\n",
+            "Requirement already satisfied: rpds-py>=0.7.1 in /usr/local/lib/python3.12/dist-packages (from jsonschema>=2.5.1->great_expectations==0.17.23) (0.27.1)\n",
+            "Requirement already satisfied: fastjsonschema>=2.15 in /usr/local/lib/python3.12/dist-packages (from nbformat>=5.0->great_expectations==0.17.23) (2.21.2)\n",
+            "Requirement already satisfied: jupyter-core!=5.0.*,>=4.12 in /usr/local/lib/python3.12/dist-packages (from nbformat>=5.0->great_expectations==0.17.23) (5.8.1)\n",
+            "Requirement already satisfied: tornado>=6.1 in /usr/local/lib/python3.12/dist-packages (from notebook>=6.4.10->great_expectations==0.17.23) (6.4.2)\n",
+            "Requirement already satisfied: pyzmq>=17 in /usr/local/lib/python3.12/dist-packages (from notebook>=6.4.10->great_expectations==0.17.23) (26.2.1)\n",
+            "Requirement already satisfied: argon2-cffi in /usr/local/lib/python3.12/dist-packages (from notebook>=6.4.10->great_expectations==0.17.23) (25.1.0)\n",
+            "Requirement already satisfied: jupyter-client<8,>=5.3.4 in /usr/local/lib/python3.12/dist-packages (from notebook>=6.4.10->great_expectations==0.17.23) (7.4.9)\n",
+            "Requirement already satisfied: nbconvert>=5 in /usr/local/lib/python3.12/dist-packages (from notebook>=6.4.10->great_expectations==0.17.23) (7.16.6)\n",
+            "Requirement already satisfied: nest-asyncio>=1.5 in /usr/local/lib/python3.12/dist-packages (from notebook>=6.4.10->great_expectations==0.17.23) (1.6.0)\n",
+            "Requirement already satisfied: Send2Trash>=1.8.0 in /usr/local/lib/python3.12/dist-packages (from notebook>=6.4.10->great_expectations==0.17.23) (1.8.3)\n",
+            "Requirement already satisfied: terminado>=0.8.3 in /usr/local/lib/python3.12/dist-packages (from notebook>=6.4.10->great_expectations==0.17.23) (0.18.1)\n",
+            "Requirement already satisfied: prometheus-client in /usr/local/lib/python3.12/dist-packages (from notebook>=6.4.10->great_expectations==0.17.23) (0.22.1)\n",
+            "Requirement already satisfied: nbclassic>=0.4.7 in /usr/local/lib/python3.12/dist-packages (from notebook>=6.4.10->great_expectations==0.17.23) (1.3.3)\n",
+            "Requirement already satisfied: tzdata>=2022.7 in /usr/local/lib/python3.12/dist-packages (from pandas>=1.3.0->great_expectations==0.17.23) (2025.2)\n",
+            "Requirement already satisfied: annotated-types>=0.6.0 in /usr/local/lib/python3.12/dist-packages (from pydantic>=1.9.2->great_expectations==0.17.23) (0.7.0)\n",
+            "Requirement already satisfied: pydantic-core==2.33.2 in /usr/local/lib/python3.12/dist-packages (from pydantic>=1.9.2->great_expectations==0.17.23) (2.33.2)\n",
+            "Requirement already satisfied: typing-inspection>=0.4.0 in /usr/local/lib/python3.12/dist-packages (from pydantic>=1.9.2->great_expectations==0.17.23) (0.4.1)\n",
+            "Requirement already satisfied: six>=1.5 in /usr/local/lib/python3.12/dist-packages (from python-dateutil>=2.8.1->great_expectations==0.17.23) (1.17.0)\n",
+            "Requirement already satisfied: charset_normalizer<4,>=2 in /usr/local/lib/python3.12/dist-packages (from requests>=2.20->great_expectations==0.17.23) (3.4.3)\n",
+            "Requirement already satisfied: idna<4,>=2.5 in /usr/local/lib/python3.12/dist-packages (from requests>=2.20->great_expectations==0.17.23) (3.10)\n",
+            "Requirement already satisfied: certifi>=2017.4.17 in /usr/local/lib/python3.12/dist-packages (from requests>=2.20->great_expectations==0.17.23) (2025.8.3)\n",
+            "Requirement already satisfied: pycparser in /usr/local/lib/python3.12/dist-packages (from cffi>=1.12->cryptography>=3.2->great_expectations==0.17.23) (2.23)\n",
+            "Requirement already satisfied: debugpy>=1.0 in /usr/local/lib/python3.12/dist-packages (from ipykernel>=4.5.1->ipywidgets>=7.5.1->great_expectations==0.17.23) (1.8.15)\n",
+            "Requirement already satisfied: psutil in /usr/local/lib/python3.12/dist-packages (from ipykernel>=4.5.1->ipywidgets>=7.5.1->great_expectations==0.17.23) (5.9.5)\n",
+            "Requirement already satisfied: parso<0.9.0,>=0.8.4 in /usr/local/lib/python3.12/dist-packages (from jedi>=0.16->Ipython>=7.16.3->great_expectations==0.17.23) (0.8.5)\n",
+            "Requirement already satisfied: platformdirs>=2.5 in /usr/local/lib/python3.12/dist-packages (from jupyter-core!=5.0.*,>=4.12->nbformat>=5.0->great_expectations==0.17.23) (4.4.0)\n",
+            "Requirement already satisfied: notebook-shim>=0.2.3 in /usr/local/lib/python3.12/dist-packages (from nbclassic>=0.4.7->notebook>=6.4.10->great_expectations==0.17.23) (0.2.4)\n",
+            "Requirement already satisfied: beautifulsoup4 in /usr/local/lib/python3.12/dist-packages (from nbconvert>=5->notebook>=6.4.10->great_expectations==0.17.23) (4.13.5)\n",
+            "Requirement already satisfied: bleach!=5.0.0 in /usr/local/lib/python3.12/dist-packages (from bleach[css]!=5.0.0->nbconvert>=5->notebook>=6.4.10->great_expectations==0.17.23) (6.2.0)\n",
+            "Requirement already satisfied: defusedxml in /usr/local/lib/python3.12/dist-packages (from nbconvert>=5->notebook>=6.4.10->great_expectations==0.17.23) (0.7.1)\n",
+            "Requirement already satisfied: jupyterlab-pygments in /usr/local/lib/python3.12/dist-packages (from nbconvert>=5->notebook>=6.4.10->great_expectations==0.17.23) (0.3.0)\n",
+            "Requirement already satisfied: nbclient>=0.5.0 in /usr/local/lib/python3.12/dist-packages (from nbconvert>=5->notebook>=6.4.10->great_expectations==0.17.23) (0.10.2)\n",
+            "Requirement already satisfied: pandocfilters>=1.4.1 in /usr/local/lib/python3.12/dist-packages (from nbconvert>=5->notebook>=6.4.10->great_expectations==0.17.23) (1.5.1)\n",
+            "Requirement already satisfied: ptyprocess>=0.5 in /usr/local/lib/python3.12/dist-packages (from pexpect>4.3->Ipython>=7.16.3->great_expectations==0.17.23) (0.7.0)\n",
+            "Requirement already satisfied: wcwidth in /usr/local/lib/python3.12/dist-packages (from prompt-toolkit!=3.0.0,!=3.0.1,<3.1.0,>=2.0.0->Ipython>=7.16.3->great_expectations==0.17.23) (0.2.13)\n",
+            "Requirement already satisfied: argon2-cffi-bindings in /usr/local/lib/python3.12/dist-packages (from argon2-cffi->notebook>=6.4.10->great_expectations==0.17.23) (25.1.0)\n",
+            "Requirement already satisfied: webencodings in /usr/local/lib/python3.12/dist-packages (from bleach!=5.0.0->bleach[css]!=5.0.0->nbconvert>=5->notebook>=6.4.10->great_expectations==0.17.23) (0.5.1)\n",
+            "Requirement already satisfied: tinycss2<1.5,>=1.1.0 in /usr/local/lib/python3.12/dist-packages (from bleach[css]!=5.0.0->nbconvert>=5->notebook>=6.4.10->great_expectations==0.17.23) (1.4.0)\n",
+            "Requirement already satisfied: jupyter-server<3,>=1.8 in /usr/local/lib/python3.12/dist-packages (from notebook-shim>=0.2.3->nbclassic>=0.4.7->notebook>=6.4.10->great_expectations==0.17.23) (2.14.0)\n",
+            "Requirement already satisfied: soupsieve>1.2 in /usr/local/lib/python3.12/dist-packages (from beautifulsoup4->nbconvert>=5->notebook>=6.4.10->great_expectations==0.17.23) (2.8)\n",
+            "Requirement already satisfied: anyio>=3.1.0 in /usr/local/lib/python3.12/dist-packages (from jupyter-server<3,>=1.8->notebook-shim>=0.2.3->nbclassic>=0.4.7->notebook>=6.4.10->great_expectations==0.17.23) (4.10.0)\n",
+            "Requirement already satisfied: jupyter-events>=0.9.0 in /usr/local/lib/python3.12/dist-packages (from jupyter-server<3,>=1.8->notebook-shim>=0.2.3->nbclassic>=0.4.7->notebook>=6.4.10->great_expectations==0.17.23) (0.12.0)\n",
+            "Requirement already satisfied: jupyter-server-terminals>=0.4.4 in /usr/local/lib/python3.12/dist-packages (from jupyter-server<3,>=1.8->notebook-shim>=0.2.3->nbclassic>=0.4.7->notebook>=6.4.10->great_expectations==0.17.23) (0.5.3)\n",
+            "Requirement already satisfied: overrides>=5.0 in /usr/local/lib/python3.12/dist-packages (from jupyter-server<3,>=1.8->notebook-shim>=0.2.3->nbclassic>=0.4.7->notebook>=6.4.10->great_expectations==0.17.23) (7.7.0)\n",
+            "Requirement already satisfied: websocket-client>=1.7 in /usr/local/lib/python3.12/dist-packages (from jupyter-server<3,>=1.8->notebook-shim>=0.2.3->nbclassic>=0.4.7->notebook>=6.4.10->great_expectations==0.17.23) (1.8.0)\n",
+            "Requirement already satisfied: sniffio>=1.1 in /usr/local/lib/python3.12/dist-packages (from anyio>=3.1.0->jupyter-server<3,>=1.8->notebook-shim>=0.2.3->nbclassic>=0.4.7->notebook>=6.4.10->great_expectations==0.17.23) (1.3.1)\n",
+            "Requirement already satisfied: python-json-logger>=2.0.4 in /usr/local/lib/python3.12/dist-packages (from jupyter-events>=0.9.0->jupyter-server<3,>=1.8->notebook-shim>=0.2.3->nbclassic>=0.4.7->notebook>=6.4.10->great_expectations==0.17.23) (3.3.0)\n",
+            "Requirement already satisfied: pyyaml>=5.3 in /usr/local/lib/python3.12/dist-packages (from jupyter-events>=0.9.0->jupyter-server<3,>=1.8->notebook-shim>=0.2.3->nbclassic>=0.4.7->notebook>=6.4.10->great_expectations==0.17.23) (6.0.2)\n",
+            "Requirement already satisfied: rfc3339-validator in /usr/local/lib/python3.12/dist-packages (from jupyter-events>=0.9.0->jupyter-server<3,>=1.8->notebook-shim>=0.2.3->nbclassic>=0.4.7->notebook>=6.4.10->great_expectations==0.17.23) (0.1.4)\n",
+            "Requirement already satisfied: rfc3986-validator>=0.1.1 in /usr/local/lib/python3.12/dist-packages (from jupyter-events>=0.9.0->jupyter-server<3,>=1.8->notebook-shim>=0.2.3->nbclassic>=0.4.7->notebook>=6.4.10->great_expectations==0.17.23) (0.1.1)\n",
+            "Requirement already satisfied: fqdn in /usr/local/lib/python3.12/dist-packages (from jsonschema[format-nongpl]>=4.18.0->jupyter-events>=0.9.0->jupyter-server<3,>=1.8->notebook-shim>=0.2.3->nbclassic>=0.4.7->notebook>=6.4.10->great_expectations==0.17.23) (1.5.1)\n",
+            "Requirement already satisfied: isoduration in /usr/local/lib/python3.12/dist-packages (from jsonschema[format-nongpl]>=4.18.0->jupyter-events>=0.9.0->jupyter-server<3,>=1.8->notebook-shim>=0.2.3->nbclassic>=0.4.7->notebook>=6.4.10->great_expectations==0.17.23) (20.11.0)\n",
+            "Requirement already satisfied: rfc3987-syntax>=1.1.0 in /usr/local/lib/python3.12/dist-packages (from jsonschema[format-nongpl]>=4.18.0->jupyter-events>=0.9.0->jupyter-server<3,>=1.8->notebook-shim>=0.2.3->nbclassic>=0.4.7->notebook>=6.4.10->great_expectations==0.17.23) (1.1.0)\n",
+            "Requirement already satisfied: uri-template in /usr/local/lib/python3.12/dist-packages (from jsonschema[format-nongpl]>=4.18.0->jupyter-events>=0.9.0->jupyter-server<3,>=1.8->notebook-shim>=0.2.3->nbclassic>=0.4.7->notebook>=6.4.10->great_expectations==0.17.23) (1.3.0)\n",
+            "Requirement already satisfied: webcolors>=24.6.0 in /usr/local/lib/python3.12/dist-packages (from jsonschema[format-nongpl]>=4.18.0->jupyter-events>=0.9.0->jupyter-server<3,>=1.8->notebook-shim>=0.2.3->nbclassic>=0.4.7->notebook>=6.4.10->great_expectations==0.17.23) (24.11.1)\n",
+            "Requirement already satisfied: lark>=1.2.2 in /usr/local/lib/python3.12/dist-packages (from rfc3987-syntax>=1.1.0->jsonschema[format-nongpl]>=4.18.0->jupyter-events>=0.9.0->jupyter-server<3,>=1.8->notebook-shim>=0.2.3->nbclassic>=0.4.7->notebook>=6.4.10->great_expectations==0.17.23) (1.2.2)\n",
+            "Requirement already satisfied: arrow>=0.15.0 in /usr/local/lib/python3.12/dist-packages (from isoduration->jsonschema[format-nongpl]>=4.18.0->jupyter-events>=0.9.0->jupyter-server<3,>=1.8->notebook-shim>=0.2.3->nbclassic>=0.4.7->notebook>=6.4.10->great_expectations==0.17.23) (1.3.0)\n",
+            "Requirement already satisfied: types-python-dateutil>=2.8.10 in /usr/local/lib/python3.12/dist-packages (from arrow>=0.15.0->isoduration->jsonschema[format-nongpl]>=4.18.0->jupyter-events>=0.9.0->jupyter-server<3,>=1.8->notebook-shim>=0.2.3->nbclassic>=0.4.7->notebook>=6.4.10->great_expectations==0.17.23) (2.9.0.20250822)\n",
+            "Downloading great_expectations-0.17.23-py3-none-any.whl (5.4 MB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m5.4/5.4 MB\u001b[0m \u001b[31m66.5 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading altair-4.2.2-py3-none-any.whl (813 kB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m813.6/813.6 kB\u001b[0m \u001b[31m58.2 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading colorama-0.4.6-py2.py3-none-any.whl (25 kB)\n",
+            "Downloading makefun-1.16.0-py2.py3-none-any.whl (22 kB)\n",
+            "Downloading marshmallow-3.26.1-py3-none-any.whl (50 kB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m50.9/50.9 kB\u001b[0m \u001b[31m4.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading ruamel.yaml-0.17.17-py3-none-any.whl (109 kB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m109.1/109.1 kB\u001b[0m \u001b[31m10.7 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading jedi-0.19.2-py2.py3-none-any.whl (1.6 MB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m1.6/1.6 MB\u001b[0m \u001b[31m75.9 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hInstalling collected packages: makefun, ruamel.yaml, marshmallow, jedi, colorama, altair, great_expectations\n",
+            "  Attempting uninstall: altair\n",
+            "    Found existing installation: altair 5.5.0\n",
+            "    Uninstalling altair-5.5.0:\n",
+            "      Successfully uninstalled altair-5.5.0\n",
+            "Successfully installed altair-4.2.2 colorama-0.4.6 great_expectations-0.17.23 jedi-0.19.2 makefun-1.16.0 marshmallow-3.26.1 ruamel.yaml-0.17.17\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": null,
+      "metadata": {
+        "id": "vCCIRQ61FMEO",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "2e37b863-4c19-4073-a665-00d4efd4f201"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "+---------+---------+--------------------+--------+--------------+---------+----------+--------------+\n",
+            "|InvoiceNo|StockCode|         Description|Quantity|   InvoiceDate|UnitPrice|CustomerID|       Country|\n",
+            "+---------+---------+--------------------+--------+--------------+---------+----------+--------------+\n",
+            "|   536365|   85123A|WHITE HANGING HEA...|       6|12/1/2010 8:26|     2.55|     17850|United Kingdom|\n",
+            "|   536365|    71053| WHITE METAL LANTERN|       6|12/1/2010 8:26|     3.39|     17850|United Kingdom|\n",
+            "|   536365|   84406B|CREAM CUPID HEART...|       8|12/1/2010 8:26|     2.75|     17850|United Kingdom|\n",
+            "|   536365|   84029G|KNITTED UNION FLA...|       6|12/1/2010 8:26|     3.39|     17850|United Kingdom|\n",
+            "|   536365|   84029E|RED WOOLLY HOTTIE...|       6|12/1/2010 8:26|     3.39|     17850|United Kingdom|\n",
+            "+---------+---------+--------------------+--------+--------------+---------+----------+--------------+\n",
+            "only showing top 5 rows\n",
+            "\n"
+          ]
+        }
+      ],
+      "source": [
+        "from pyspark.sql import SparkSession\n",
+        "from pyspark.sql.functions import *\n",
+        "from pyspark.sql.types import *\n",
+        "from pyspark.ml.feature import Imputer, StandardScaler, VectorAssembler\n",
+        "from pyspark.ml.stat import Correlation\n",
+        "\n",
+        "# Inicializar Spark\n",
+        "spark = SparkSession.builder \\\n",
+        "    .appName(\"DataQualityExample\") \\\n",
+        "    .config(\"spark.sql.adaptive.enabled\", \"true\") \\\n",
+        "    .config(\"spark.sql.adaptive.coalescePartitions.enabled\", \"true\") \\\n",
+        "    .config(\"spark.sql.adaptive.skew.enabled\", \"true\") \\\n",
+        "    .config(\"spark.serializer\", \"org.apache.spark.serializer.KryoSerializer\") \\\n",
+        "    .getOrCreate()\n",
+        "\n",
+        "# Cargar datos\n",
+        "df_spark = spark.read.option(\"header\", \"true\").csv(\"data.csv\", inferSchema=True)\n",
+        "df_spark.show(5)"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# analisis de calidad\n",
+        "\n",
+        "def spark_quality_analysis(df):\n",
+        "    \"\"\"Análisis de calidad para Spark DataFrame\"\"\"\n",
+        "    print(\"=== ANÁLISIS DE CALIDAD SPARK ===\")\n",
+        "\n",
+        "    # Conteo de registros\n",
+        "    print(f\"Total registros: {df.count()}\")\n",
+        "    print(f\"Total columnas: {len(df.columns)}\")\n",
+        "\n",
+        "    # Análisis de nulls por columna\n",
+        "    null_counts = df.select([\n",
+        "        count(when(isnan(c) | col(c).isNull(), c)).alias(c)\n",
+        "        for c in df.columns\n",
+        "    ]).collect()[0]\n",
+        "\n",
+        "    print(\"\\nVALORES NULOS POR COLUMNA:\")\n",
+        "    for col_name, null_count in null_counts.asDict().items():\n",
+        "        if null_count > 0:\n",
+        "            percentage = (null_count / df.count()) * 100\n",
+        "            print(f\"{col_name}: {null_count} ({percentage:.2f}%)\")\n",
+        "\n",
+        "    # Duplicados\n",
+        "    total_rows = df.count()\n",
+        "    unique_rows = df.distinct().count()\n",
+        "    duplicates = total_rows - unique_rows\n",
+        "    print(f\"\\nRegistros duplicados: {duplicates}\")\n",
+        "\n",
+        "    return df\n",
+        "\n",
+        "spark_quality_analysis(df_spark)"
+      ],
+      "metadata": {
+        "id": "f84GsQ-tFu8B",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "3a8dc0d5-4d4f-458d-c389-9f2c0cd0d029"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "=== ANÁLISIS DE CALIDAD SPARK ===\n",
+            "Total registros: 541909\n",
+            "Total columnas: 8\n",
+            "\n",
+            "VALORES NULOS POR COLUMNA:\n",
+            "Description: 1454 (0.27%)\n",
+            "CustomerID: 135080 (24.93%)\n",
+            "\n",
+            "Registros duplicados: 5268\n"
+          ]
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "DataFrame[InvoiceNo: string, StockCode: string, Description: string, Quantity: int, InvoiceDate: string, UnitPrice: double, CustomerID: int, Country: string]"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 9
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Limpieza Distribuida\n",
+        "\n",
+        "def spark_data_cleaning(df):\n",
+        "    \"\"\"Pipeline de limpieza para Spark\"\"\"\n",
+        "\n",
+        "    # 1. Eliminar registros con muchos nulls\n",
+        "    threshold = 0.5  # Eliminar filas con >50% nulls\n",
+        "    min_non_null = int(threshold * len(df.columns))\n",
+        "    df_clean = df.dropna(thresh=min_non_null)\n",
+        "\n",
+        "    # 2. Imputación por columna\n",
+        "    numeric_cols = [field.name for field in df_clean.schema.fields\n",
+        "                   if field.dataType in [IntegerType(), DoubleType(), FloatType()]]\n",
+        "\n",
+        "    # Imputar con mediana\n",
+        "    for col_name in numeric_cols:\n",
+        "        median_val = df_clean.approxQuantile(col_name, [0.5], 0.01)[0]\n",
+        "        df_clean = df_clean.na.fill({col_name: median_val})\n",
+        "\n",
+        "    # Imputar categóricas con moda\n",
+        "    string_cols = [field.name for field in df_clean.schema.fields\n",
+        "                  if field.dataType == StringType()]\n",
+        "\n",
+        "    for col_name in string_cols:\n",
+        "        mode_val = df_clean.groupBy(col_name).count().orderBy(desc(\"count\")).first()[0]\n",
+        "        df_clean = df_clean.na.fill({col_name: mode_val})\n",
+        "\n",
+        "    # 3. Eliminar duplicados\n",
+        "    df_clean = df_clean.dropDuplicates()\n",
+        "\n",
+        "    # 4. Detección de outliers usando IQR\n",
+        "    for col_name in numeric_cols:\n",
+        "        quantiles = df_clean.approxQuantile(col_name, [0.25, 0.75], 0.01)\n",
+        "        q1, q3 = quantiles[0], quantiles[1]\n",
+        "        iqr = q3 - q1\n",
+        "        lower_bound = q1 - 1.5 * iqr\n",
+        "        upper_bound = q3 + 1.5 * iqr\n",
+        "\n",
+        "        df_clean = df_clean.filter(\n",
+        "            (col(col_name) >= lower_bound) &\n",
+        "            (col(col_name) <= upper_bound)\n",
+        "        )\n",
+        "\n",
+        "    return df_clean\n",
+        "\n",
+        "df_spark_clean = spark_data_cleaning(df_spark)\n",
+        "print(f\"Registros después de limpieza: {df_spark_clean.count()}\")"
+      ],
+      "metadata": {
+        "id": "VozvOoXoGSwB",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "22c42065-cadc-4437-9788-0f9ed5128c95"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Registros después de limpieza: 468260\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "PANDAS"
+      ],
+      "metadata": {
+        "id": "dmsEz1Vkni2N"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import pandas as pd\n",
+        "import numpy as np\n",
+        "\n",
+        "df_limp = pd.read_csv(\"data.csv\",encoding='latin-1')\n",
+        "df_limp.describe()\n",
+        "df_limp.info()\n",
+        "print(f\"Registros antes de la Limpiez: {df_limp.count()}\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "ZmlWOueonisl",
+        "outputId": "cd434590-843f-4682-8996-3bb31bef0f19"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "<class 'pandas.core.frame.DataFrame'>\n",
+            "RangeIndex: 541909 entries, 0 to 541908\n",
+            "Data columns (total 8 columns):\n",
+            " #   Column       Non-Null Count   Dtype  \n",
+            "---  ------       --------------   -----  \n",
+            " 0   InvoiceNo    541909 non-null  object \n",
+            " 1   StockCode    541909 non-null  object \n",
+            " 2   Description  540455 non-null  object \n",
+            " 3   Quantity     541909 non-null  int64  \n",
+            " 4   InvoiceDate  541909 non-null  object \n",
+            " 5   UnitPrice    541909 non-null  float64\n",
+            " 6   CustomerID   406829 non-null  float64\n",
+            " 7   Country      541909 non-null  object \n",
+            "dtypes: float64(2), int64(1), object(5)\n",
+            "memory usage: 33.1+ MB\n",
+            "Registros antes de la Limpiez: InvoiceNo      541909\n",
+            "StockCode      541909\n",
+            "Description    540455\n",
+            "Quantity       541909\n",
+            "InvoiceDate    541909\n",
+            "UnitPrice      541909\n",
+            "CustomerID     406829\n",
+            "Country        541909\n",
+            "dtype: int64\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "En analisis de la data se identifica que ne la data limpia 468260 y en la data general con 541909"
+      ],
+      "metadata": {
+        "id": "jOwGyYfAt6UA"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Con una diferencia de 73.649 registros que seria por la data y el IQU el Rango Intercuantilico ya que en Kaglee indica que la data es de clioentes mayoristas y por lo cual en el IQU deberia ser diferente ya que una venta alto puede tomarlo como outlidher outliers"
+      ],
+      "metadata": {
+        "id": "jyFKK4tWuTsD"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# DATA QUALITY DASHBOARD\n",
+        "\n",
+        "# Crear Visualizaciones de Calidad\n",
+        "\n",
+        "import plotly.graph_objects as go\n",
+        "import plotly.express as px\n",
+        "from plotly.subplots import make_subplots\n",
+        "import plotly.offline as pyo\n",
+        "\n",
+        "def create_quality_dashboard(df, validation_result):\n",
+        "    \"\"\"Crea dashboard interactivo de calidad\"\"\"\n",
+        "\n",
+        "    # 1. Completitud por columna\n",
+        "    missing_data = df.isnull().sum().reset_index()\n",
+        "    missing_data.columns = ['Column', 'Missing_Count']\n",
+        "    missing_data['Missing_Percentage'] = (missing_data['Missing_Count'] / len(df)) * 100\n",
+        "\n",
+        "    fig1 = px.bar(missing_data, x='Column', y='Missing_Percentage',\n",
+        "                  title='Completitud por Columna (%)')\n",
+        "    fig1.update_layout(xaxis_tickangle=-45)\n",
+        "\n",
+        "    # 2. Distribución de calidad por expectativas\n",
+        "    success_count = sum(1 for result in validation_result.results if result.success)\n",
+        "    fail_count = len(validation_result.results) - success_count\n",
+        "\n",
+        "    fig2 = go.Figure(data=[\n",
+        "        go.Pie(labels=['Pasadas', 'Fallidas'],\n",
+        "               values=[success_count, fail_count],\n",
+        "               hole=0.3)\n",
+        "    ])\n",
+        "    fig2.update_layout(title='Distribución de Expectativas')\n",
+        "\n",
+        "    # 3. Outliers por columna numérica\n",
+        "    numeric_cols = df.select_dtypes(include=[np.number]).columns\n",
+        "    fig3 = make_subplots(rows=2, cols=2,\n",
+        "                        subplot_titles=[f'Outliers en {col}' for col in numeric_cols[:4]])\n",
+        "\n",
+        "    for i, col in enumerate(numeric_cols[:4]):\n",
+        "        row = (i // 2) + 1\n",
+        "        col_pos = (i % 2) + 1\n",
+        "\n",
+        "        fig3.add_trace(\n",
+        "            go.Box(y=df[col], name=col),\n",
+        "            row=row, col=col_pos\n",
+        "        )\n",
+        "\n",
+        "    # 4. Correlación entre variables numéricas\n",
+        "    corr_matrix = df[numeric_cols].corr()\n",
+        "    fig4 = px.imshow(corr_matrix,\n",
+        "                     title='Matriz de Correlación',\n",
+        "                     color_continuous_scale='RdBu_r')\n",
+        "\n",
+        "    # Mostrar gráficos\n",
+        "    fig1.show()\n",
+        "    fig2.show()\n",
+        "    fig3.show()\n",
+        "    fig4.show()\n",
+        "\n",
+        "    return fig1, fig2, fig3, fig4\n",
+        "\n",
+        "# Crear dashboard\n",
+        "# dashboard_figs = create_quality_dashboard(df_clean, validation_result)"
+      ],
+      "metadata": {
+        "id": "zIr0-hfXrRL_"
+      },
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
